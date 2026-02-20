@@ -60,7 +60,7 @@ If you still see "Fedora" in the boot menu even after deleting the folder, it's 
     bcdedit /delete {your-identifier-here}
     ```
 
-    > [TIP] 
+    > [!TIP] 
     > In Command Prompt, you can highlight the ID with your mouse and press **Enter** to copy it, then right-click to paste it.*
 
 4. Verify
@@ -68,6 +68,6 @@ If you still see "Fedora" in the boot menu even after deleting the folder, it's 
     Run `bcdedit /enum firmware` one last time to make sure it's gone.
 
 
-
 ## References
+
 [^1]: https://www.youtube.com/watch?v=TvtlVKJPWzI

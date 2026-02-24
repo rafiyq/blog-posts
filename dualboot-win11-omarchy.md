@@ -34,10 +34,10 @@ Run `archinstall` and configure the following options. Leave any unlisted settin
 | **Disk configuration** |  |
 | > **Partition** | Manual partitioning > Select your disk > Follow the subvolume table below |
 | > **File system** | `btrfs` (Use compression) |
-| > **Disk encryption** | Encryption type: `LUKS` + Set Password + Apply to the Arch partition |
+| > **Encryption** | Encryption type: `LUKS` + Set Password + Apply to the Arch partition |
 | **Hostname** | Choose a unique system name |
-| **Bootloader** | `Limine`, Install to removable location > No |
-| **Authentication** | Set Root password & create a User account (Superuser: Yes) |
+| **Bootloader** | `Limine` (Install to removable location: No) |
+| **Authentication** | Create a User account (Superuser: Yes) |
 | **Applications > Audio** | `pipewire` |
 | **Network config** | Copy ISO network configuration |
 
@@ -59,7 +59,8 @@ Run `archinstall` and configure the following options. Leave any unlisted settin
 | `@log` | `/var/log` |
 | `@pkg` | `/var/cache/pacman/pkg` |
 
-**Important:** You **must** enable disk encryption. Omarchy’s security model relies on full-disk encryption to protect the auto-login mechanism used after the drive is decrypted at boot.
+> [!IMPORTANT]
+> You **must** enable disk encryption. Omarchy’s security model relies on full-disk encryption to protect the auto-login mechanism used after the drive is decrypted at boot.
 
 
 ## Phase 3: Install Omarchy
@@ -92,7 +93,7 @@ If you need to uninstall the dual-boot setup, you must reclaim the disk space an
 
 1. In Windows, right-click **Start** and select **Disk Management**.
 2. Identify the Linux partitions. They will likely be labeled **"Healthy (Primary Partition)"** or **"Unknown Partition"** and won't have a drive letter.
-* *Look for sizes that match your Linux install (e.g., 60GB).*
+    - _Look for sizes that match your Linux install (e.g., 60GB)._
 
 
 3. Right-click the Linux partitions and select **Delete Volume**.
@@ -125,6 +126,7 @@ If a "Ghost" entry still appears in your BIOS boot menu:
 
 
 
-**References**
+## References
 
-https://learn.omacom.io/2/the-omarchy-manual/96/manual-installation
+- https://learn.omacom.io/2/the-omarchy-manual/96/manual-installation
+- https://github.com/basecamp/omarchy/discussions/1651

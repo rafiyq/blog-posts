@@ -2,16 +2,17 @@
 
 Omarchy is designed to run on a LUKS-encrypted Btrfs filesystem using the Limine
 bootloader. While the official Omarchy ISO automates this by wiping the drive,
-you can perform a manual dual-boot installation. This involves setting up your
-Btrfs subvolume architecture, installing a base Arch system via `archinstall`,
+you can perform a manual dual-boot installation. 
+This involves setting up your Btrfs subvolume architecture, 
+installing a base Arch system via `archinstall`,
 and then running the Omarchy bootstrap script.
 
 > [!WARNING] 
-> **Hardware Compatibility:** Because this setup uses full-disk
-> encryption, you must enter your LUKS password before the Bluetooth stack
-> initializes. **Bluetooth keyboards will not work for decryption.** You must
-> use a built-in laptop keyboard, a wired USB keyboard, or a 2.4GHz wireless
-> keyboard with a USB dongle.
+> **Hardware Compatibility:** Because this setup uses full-disk encryption, 
+> you must enter your LUKS password before the Bluetooth stack initializes. 
+> **Bluetooth keyboards will not work for decryption.** 
+> You must use a built-in laptop keyboard, a wired USB keyboard, 
+> or a 2.4GHz wireless keyboard with a USB dongle.
 
 ## Prerequisites & Preparation
 
@@ -32,7 +33,7 @@ Before beginning, ensure your system is prepared:
 1. **Boot the Arch Linux ISO:** Ensure you boot the standard vanilla Arch ISO in
    UEFI mode.
 2. **Network Connection:** Use `iwctl` for Wi-Fi or connect an Ethernet cable.
-   - Verify connectivity: `ping archlinux.org`
+   Verify connectivity: `ping archlinux.org`
 
 3. **Sync System Clock:** Run `timedatectl set-ntp true`.
 
@@ -72,40 +73,42 @@ settings at their defaults:
 | `@pkg`  | `/var/cache/pacman/pkg` |
 
 > [!IMPORTANT] 
-> You **must** enable disk encryption. Omarchy’s security model
-> relies on full-disk encryption to protect the auto-login mechanism used after
-> the drive is decrypted at boot.
+> You **must** enable disk encryption. 
+> Omarchy’s security model relies on full-disk encryption to protect 
+> the auto-login mechanism used after the drive is decrypted at boot.
 
 ## Phase 3: Install Omarchy
 
-Once the base Arch installation finishes, reboot and log in to your new user
-account. To transform the base install into Omarchy, run:
+Once the base Arch installation finishes, 
+reboot and log in to your new user account. 
+To transform the base install into Omarchy, run:
 
 ```bash
 curl -fsSL https://omarchy.org/install | bash
 ```
 
-The script will prompt for your `sudo` password. The process takes **5–30
-minutes** depending on your hardware and internet speed. Once complete, the
-script will ask permission to reboot.
+The script will prompt for your `sudo` password. 
+The process takes **5–30 minutes** depending on your hardware and internet speed.
+Once complete, the script will ask permission to reboot.
 
 > [!TIP] 
-> If the installation fails due to a network timeout, simply select
-> **Retry Installation**.
+> If the installation fails due to a network timeout, 
+> simply select **Retry Installation**.
 
 ## Phase 4: Post-Installation (Windows Dual-Boot)
 
-By default, the Limine bootloader may not immediately display the Windows 11
-entry. To resolve this:
+By default, 
+the Limine bootloader may not immediately display the Windows 11 entry. 
+To resolve this:
 
 1. Run `limine-scan` (or the specific configuration tool provided by Omarchy) to
    detect the Windows EFI partition.
 2. Add the detected entry to your boot menu configuration.
 
-## Phase 5: Secure Boot Implementation
+## Secure Boot Implementation (Optional)
 
-**Secure Boot** is a critical security standard within the UEFI framework. It
-protects the pre-boot environment by ensuring only cryptographically signed
+**Secure Boot** is a critical security standard within the UEFI framework.
+It protects the pre-boot environment by ensuring only cryptographically signed
 binaries are allowed to execute. By managing a "whitelist" of authorized keys,
 it prevents tampered boot managers, kernels, or initramfs images from
 compromising the system at its most vulnerable stage.
@@ -128,15 +131,17 @@ it is willing to accept them.
 2. Locate the **Secure Boot** section.
 3. Select the option to **Clear/Delete/Restore Factory Keys**.
 
-   > [!NOTE] This action places the system into "Setup Mode"
+> [!NOTE] 
+> This action places the system into "Setup Mode"
 
-   > [!WARNING] **Do not** enable Secure Boot yet.
+> [!WARNING] 
+> **Do not** enable Secure Boot yet.
 
 4. Save changes and exit.
 
 > [!WARNING] 
-> Clearing keys is non-destructive to your data, but it is a prerequisite for 
-> enrolling custom ownership of the boot process.
+> Clearing keys is non-destructive to your data, 
+> but it is a prerequisite for enrolling custom ownership of the boot process.
 
 ### Step 2: Verify Firmware Status
 
@@ -172,13 +177,14 @@ sudo sbctl enroll-keys -m
 ```
 
 > [!TIP] 
-> The `-m` flag is highly recommended. It enrolls Microsoft’s keys
-> alongside your own, ensuring that Windows dual-boots and various hardware
-> drivers (Option ROMs) continue to function.
+> The `-m` flag is highly recommended. 
+> It enrolls Microsoft’s keys alongside your own, 
+> ensuring that Windows dual-boots and various hardware drivers (Option ROMs) 
+> continue to function.
 
-3. **Verify:** Run `sudo sbctl status` again. **Setup Mode** should now be
-   `Disabled` (Locked), and your keys should be listed under the PK, KEK, and DB
-   entries.
+3. **Verify:** Run `sudo sbctl status` again. 
+   **Setup Mode** should now be `Disabled` (Locked), and 
+   your keys should be listed under the PK, KEK, and DB entries.
 
 ### Step 4: Configure the Boot Image
 
@@ -188,6 +194,7 @@ configured to handle the encrypted hand-off.
 1. **Edit the configuration:**
 
 ```bash
+sudo nano /etc/mkinitcpio.conf.d/omarchy_hooks.conf   # or
 sudo nano /etc/mkinitcpio.conf
 ```
 
@@ -223,10 +230,105 @@ sudo systemctl reboot --firmware-setup
 **Validation:** Once logged back in, run `bootctl status` or `sbctl status`. You
 should see a definitive **Secure Boot: Enabled**.
 
+## TPM2 & LUKS Auto-Unlock (Optional)
+
+It is possible to encrypt volumes using keys securely stored in the TPM. 
+This approach ensures that your drives remain locked unless the TPM is present 
+and specific conditions are met, such as the integrity of the firmware or 
+Secure Boot state.
+
+This mechanism can be used to automatically decrypt the root volume during the
+boot process, similarly to how BitLocker works on Windows or FileVault on macOS.
+While this provides strong protection if the drive is removed from the computer
+with the TPM, data protection will only rely on basic measures like user
+passwords and system settings if the entire PC is stolen.
+
+On Arch Linux, the most modern and straightforward way to do this is by using
+`systemd-cryptenroll`.
+
+### Prerequisites
+
+- **TPM 2.0** hardware.
+- **LUKS2** partition format (standard for modern Arch).
+- **Secure Boot** enabled (highly recommended for actual security).
+
+### Step 1: Verify Hardware & Version
+
+Ensure your system recognizes the TPM and your partition is LUKS2.
+
+1. **Check TPM 2.0:** `systemd-cryptenroll --tpm2-device=list` (Look for
+   `/dev/tpmrm0`).
+2. **Confirm LUKS2:** `sudo cryptsetup luksDump /dev/nvme0n1p2 | grep Version`
+
+> [!NOTE] 
+> If it says Version 1, you must upgrade the header before proceeding.
+
+### Step 2: Enroll the TPM Key
+
+Bind your LUKS key to specific **PCR (Platform Configuration Register)** slots.
+
+- **PCR 7:** Secure Boot state (Recommended).
+- **PCR 0:** System firmware/BIOS.
+
+Run the following (replace `/dev/nvme0n1p2` with your partition):
+
+```bash
+sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
+```
+
+> [!Important] 
+> Keep your manual passphrase as a backup! 
+> Do not wipe the passphrase slot; 
+> if your BIOS updates, the TPM might refuse to unlock.
+
+### Step 3: Switch to systemd Hooks
+
+To use the TPM during early boot, you must switch from `busybox` hooks to
+`systemd` hooks.
+
+1. Edit `/etc/mkinitcpio.conf.d/omarchy_hooks.conf` or `/etc/mkinitcpio.conf`.
+2. Replace value below in the `HOOKS` array:
+   - Replace `udev` with `systemd`
+   - Replace `keymap` and `consolefont` with `sd-vconsole`
+   - Replace `encrypt` with `sd-encrypt`
+3. **Regenerate initramfs:** `sudo limine-mkinitcpio`
+
+### Step 4: Configure Limine Bootloader
+
+Identify your partition UUID using `blkid` (look for `TYPE="crypto_LUKS"`) and
+update your `/etc/default/limine` entry.
+
+**Example Configuration:**
+
+```text
+KERNEL_CMDLINE[default]="root=/dev/mapper/root zswap.enabled=0 rootflags=subvol=@ rw rootfstype=btrfs"
+KERNEL_CMDLINE[default]+="rd.luks.name=UUID=root rd.luks.options=UUID=tpm2-device=auto"
+KERNEL_CMDLINE[default]+="quiet splash"
+```
+
+**Parameters Explained:**
+
+- `rd.luks.name`: Maps the UUID to `/dev/mapper/root`.
+- `rd.luks.options`: Directs `sd-encrypt` to use the TPM for this specific UUID.
+- `root`: Sets the final root filesystem location.
+
+### Step 5: Reboot
+
+Reboot your system. If configured correctly, the system will query the TPM and
+bypass the manual password prompt entirely.
+
+> [!WARNING] 
+> **Important Maintenance Note:** Any time you update your BIOS/UEFI,
+> turn Secure Boot on/off, or change hardware, the TPM PCRs will change, and 
+> it will refuse to unlock your drive. 
+> When this happens, you will be prompted for your standard LUKS password.
+> Once booted, you will need to wipe the old TPM slot and re-enroll it using 
+> `systemd-cryptenroll --wipe-slot=tpm2`.
+
 ## How to Remove Omarchy
 
-If you need to uninstall the dual-boot setup, you must reclaim the disk space
-and clean up the EFI boot entry.
+If you need to uninstall the dual-boot setup, 
+you must reclaim the disk space and clean up the EFI boot entry.
 
 ### Step 1: Delete Linux Partitions
 
@@ -258,8 +360,8 @@ If a "Ghost" entry still appears in your BIOS boot menu:
 
 1. Open **Command Prompt (Admin)**.
 2. List firmware entries: `bcdedit /enum firmware`
-3. Find the entry labeled `description Omarchy` or `Arch`. Copy its
-   **identifier** (the long string in brackets `{}`).
+3. Find the entry labeled `description Omarchy` or `Arch`. 
+   Copy its **identifier** (the long string in brackets `{}`).
 4. Delete the entry:
 
    ```cmd
@@ -270,7 +372,9 @@ If a "Ghost" entry still appears in your BIOS boot menu:
 
 ## References
 
-- [Manual Installation - The Omarchy Manual](<https://learn.omacom.io/2/the-omarchy-manual/96/manual-installation>)
-- [Manual Partitioning in archinstall for dual boot Omarchy #1651](<https://github.com/basecamp/omarchy/discussions/1651>)
-- [Omarchy Dual-Boot Secure Boot Setup (Custom Keys Guide) #2296](<https://github.com/basecamp/omarchy/discussions/2296>)
-- [Unified Extensible Firmware Interface/Secure Boot](<https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface/Secure_Boot>)
+- [Manual Installation - The Omarchy Manual](https://learn.omacom.io/2/the-omarchy-manual/96/manual-installation)
+- [Manual Partitioning in archinstall for dual boot Omarchy #1651](https://github.com/basecamp/omarchy/discussions/1651)
+- [Omarchy Dual-Boot Secure Boot Setup (Custom Keys Guide) #2296](https://github.com/basecamp/omarchy/discussions/2296)
+- [Unified Extensible Firmware Interface/Secure Boot](https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface/Secure_Boot)
+- [Trusted Platform Module](https://wiki.archlinux.org/title/Trusted_Platform_Module#LUKS_encryption)
+- [systemd-cryptenroll - ArchWiki](https://wiki.archlinux.org/title/Systemd-cryptenroll)

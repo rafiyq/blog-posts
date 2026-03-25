@@ -1,0 +1,12 @@
+[
+    {
+        "slug": "dualboot-win11-omarchy",
+        "title": "Dual-Booting Windows 11 and Omarchy",
+        "date": "2026-03-23",
+        "lastUpdated": "2026-03-23",
+        "description": "A detailed walkthrough on setting up a manual dual-boot installation with full-disk encryption.",
+        "tags": ["linux", "windows", "tutorial"],
+        "readingTime": 10,
+        "filePath": "dualboot-win11-omarchy.md"
+    }
+]

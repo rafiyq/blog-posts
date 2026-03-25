@@ -1,0 +1,35 @@
+name: Update Index
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*.md'
+      - '!README.md'
+      - 'generate-index.sh'
+  workflow_dispatch:
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for git log (lastUpdated)
+
+      - name: Generate index.json
+        run: bash generate-index.sh
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add index.json
+          if git diff --staged --quiet; then
+            echo "No changes to index.json"
+          else
+            git commit -m "Auto-update index [skip ci]"
+            git push
+          fi

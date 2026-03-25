@@ -1,3 +1,10 @@
+---
+title: "Dual-Booting Windows 11 and Omarchy"
+date: "2026-03-23"
+description: "A detailed walkthrough on setting up a manual dual-boot installation with full-disk encryption."
+tags: ["linux", "windows", "tutorial"]
+---
+
 # Dual-Booting Windows 11 and Omarchy on a Single Disk
 
 Omarchy is designed to run on a LUKS-encrypted Btrfs filesystem using the Limine

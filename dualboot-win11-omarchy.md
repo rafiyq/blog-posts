@@ -134,17 +134,17 @@ Now, you will create your own "Root of Trust" and inject it into the motherboard
 
 1. **Generate Keys:**
 
-  ```bash
-  sudo sbctl create-keys
-  ```
+   ```bash
+   sudo sbctl create-keys
+   ```
 
   This creates your unique signature database in `/usr/share/secureboot/keys/`.
 
 2. **Enroll Keys:**
 
-  ```bash
-  sudo sbctl enroll-keys -m
-  ```
+   ```bash
+   sudo sbctl enroll-keys -m
+   ```
 
 > [!TIP] 
 > The `-m` flag is highly recommended. It enrolls Microsoft’s keys alongside your own, ensuring that Windows dual-boots and various hardware drivers (Option ROMs) continue to function.
@@ -157,30 +157,30 @@ For Secure Boot to remain effective, your initial RAM disk must be properly conf
 
 1. **Edit the configuration:**
 
-  ```bash
-  sudo nano /etc/mkinitcpio.conf.d/omarchy_hooks.conf   # or
-  sudo nano /etc/mkinitcpio.conf
-  ```
+   ```bash
+   sudo nano /etc/mkinitcpio.conf.d/omarchy_hooks.conf   # or
+   sudo nano /etc/mkinitcpio.conf
+   ```
 
 2. **Update Hooks:** Add `btrfs-overlayfs` to the `HOOKS` array to ensure proper filesystem mounting during the secure hand-off.
 
-```bash
-HOOKS=(... btrfs-overlayfs)
-```
+   ```bash
+   HOOKS=(... btrfs-overlayfs)
+   ```
 
 3. **Rebuild & Update:** Regenerate the initramfs and refresh the Limine bootloader configuration.
 
-```bash
-sudo limine-mkinitcpio
-```
+   ```bash
+   sudo limine-mkinitcpio
+   ```
 
 ### Step 5: Final Activation
 
 1. Reboot directly into the firmware:
 
-```bash
-sudo systemctl reboot --firmware-setup
-```
+   ```bash
+   sudo systemctl reboot --firmware-setup
+   ```
 
 2. In the UEFI settings:
    - **Enable Secure Boot.**

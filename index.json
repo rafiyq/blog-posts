@@ -1,32 +1,12 @@
 [
   {
-    "slug": "hibernation-setup-guide",
+    "slug": "linux-hibernation-guide",
     "title": "Hibernation Setup Guide for Linux",
     "date": "2026-06-17",
     "lastUpdated": "2026-06-17",
     "description": "A comprehensive guide to configuring hibernation across Arch, Fedora, Ubuntu, and openSUSE with ext4 and Btrfs filesystems.",
-    "tags": [
-      "linux",
-      "hibernation",
-      "tutorial",
-      "system-administration"
-    ],
+    "tags": ["linux", "hibernation", "tutorial", "system-administration"],
     "readingTime": 9,
-    "filePath": "hibernation-setup-guide.md"
-  },
-  {
-    "slug": "linux-hibernation-guide",
-    "title": "Hibernation Setup Guide for Linux",
-    "date": "2026-06-17",
-    "lastUpdated": "2026-06-19",
-    "description": "A distribution-agnostic guide to setting up hibernation across ext4 and Btrfs filesystems, covering Arch, Fedora, Ubuntu, and openSUSE.",
-    "tags": [
-      "linux",
-      "hibernation",
-      "tutorial",
-      "guide"
-    ],
-    "readingTime": 7,
     "filePath": "linux-hibernation-guide.md"
   },
   {
@@ -35,11 +15,7 @@
     "date": "2026-03-23",
     "lastUpdated": "2026-03-26",
     "description": "A detailed walkthrough on setting up a manual dual-boot installation with full-disk encryption.",
-    "tags": [
-      "linux",
-      "windows",
-      "tutorial"
-    ],
+    "tags": ["linux", "windows", "tutorial"],
     "readingTime": 10,
     "filePath": "dualboot-win11-omarchy.md"
   }
